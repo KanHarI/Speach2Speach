@@ -40,19 +40,19 @@ class WavRawData:
 
 
 # Those parameters where chosen empirically after expirementation with audio quality of output after 
-WINDOW_STDS_IN_SEC = 100
-WINDOW = signal.get_window(('gaussian', 3*WAV_DATARATE//WINDOW_STDS_IN_SEC), 10*WAV_DATARATE//WINDOW_STDS_IN_SEC)
+WINDOW_STDS_IN_SEC = 50
+WINDOW = signal.get_window(('gaussian', 2*WAV_DATARATE//WINDOW_STDS_IN_SEC), 6*WAV_DATARATE//WINDOW_STDS_IN_SEC)
 STFT_PARAMS = {
 	'window': WINDOW,
-	'nperseg': 10*WAV_DATARATE//WINDOW_STDS_IN_SEC,
-	'noverlap': 9*WAV_DATARATE//WINDOW_STDS_IN_SEC
+	'nperseg': 6*WAV_DATARATE//WINDOW_STDS_IN_SEC,
+	'noverlap': 5*WAV_DATARATE//WINDOW_STDS_IN_SEC
 }
 
 class WavFFTData:
 	def __init__(self, WavRawData):
 		# Convert to mono
-		data = WavRawData.data[:,0] + WavRawData.data[:,1]
-		data = data.astype(np.float64)/2
+		data = WavRawData.data.astype(np.float64)/2
+		data = data[:,0] + data[:,1]
 		self.data = signal.stft(data, **STFT_PARAMS)[2]
 
 	def to_raw(self):
@@ -67,7 +67,8 @@ def main():
 	wfd = WavFFTData(fst_file)
 	print(wfd.data)
 	wav = wfd.to_raw()
-	print(wav)
+	print(wav.data)
+	wav.create_wav_file("out.wav")
 	return wav
 
 
