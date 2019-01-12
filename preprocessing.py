@@ -70,7 +70,7 @@ class MonoRawGenerator:
 			self.ptr += (FFT_GENERATOR_WIN_SECONDS-FFT_GENERATOR_OVERLAP_SECONDS) * WAV_DATARATE
 
 
-WINDOWS_IN_SEC = 50
+WINDOWS_IN_SEC = 60
 WINDOW = signal.get_window(('gaussian', 2*WAV_DATARATE//WINDOWS_IN_SEC), 6*WAV_DATARATE//WINDOWS_IN_SEC)
 STFT_PARAMS = {
 	'window': WINDOW,
@@ -110,10 +110,10 @@ class FFTGenerator:
 			yield data
 
 MIN_SECONDS = 5
-SEPERATORS_PER_SECOND = 10
+SEPERATORS_PER_SECOND = 6
 
 class SentenceSeperator:
-	def __init__(self, volume_threshold=200., seperator_length=WINDOWS_IN_SEC//SEPERATORS_PER_SECOND):
+	def __init__(self, volume_threshold=400., seperator_length=WINDOWS_IN_SEC//SEPERATORS_PER_SECOND):
 		self.volume_threshold = volume_threshold
 		self.seperator_length = seperator_length
 		self.pool = nn.MaxPool1d(seperator_length)
