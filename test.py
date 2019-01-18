@@ -2,6 +2,7 @@
 import numpy as np
 
 import preprocessing
+import random_transformer
 
 
 def test_filegen():
@@ -32,10 +33,12 @@ def test_2():
 
 def main():
 	sg = preprocessing.DataSource().gen("Data/Speaker_A/WAV")
+	trans = random_transformer.RandomTransformer()
 	for i, sentence in enumerate(sg):
-		preprocessing.WavFFTData(sentence).to_raw().create_wav_file("out_%d.wav" % i)
-		if i > 10:
+		if i > 9:
 			break
+		sentence = trans.transform(sentence)
+		preprocessing.WavFFTData(sentence).to_raw().create_wav_file("out_%d.wav" % i)
 
 if __name__ == "__main__":
 	main()

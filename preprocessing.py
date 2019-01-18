@@ -110,10 +110,11 @@ class FFTGenerator:
 			yield data
 
 MIN_SECONDS = 5
+MAX_SECONDS = 20
 SEPERATORS_PER_SECOND = 6
 
 class SentenceSeperator:
-	def __init__(self, volume_threshold=400., seperator_length=WINDOWS_IN_SEC//SEPERATORS_PER_SECOND):
+	def __init__(self, volume_threshold=500., seperator_length=WINDOWS_IN_SEC//SEPERATORS_PER_SECOND):
 		self.volume_threshold = volume_threshold
 		self.seperator_length = seperator_length
 		self.pool = nn.MaxPool1d(seperator_length)
@@ -136,6 +137,10 @@ class SentenceSeperator:
 			pooled_volume = pooled_volume[0,0]
 			nbreak = self.find_next_break(pooled_volume, ptr)
 			if nbreak == None:
+				if volume.shape[0] > MAX_SECONDS*WINDOWS_IN_SEC:
+					sample = sample[:,-1:]
+					volume = volume[-1:]
+					ptr = MIN_SECONDS*SEPERATORS_PER_SECOND
 				tmp = fft_gen.__next__()
 				sample = np.concatenate([sample, tmp], axis=1)
 				volume = np.concatenate([volume, self.sample_to_volume(tmp)])
